@@ -1,0 +1,11 @@
+{
+  "name": "prompt-architect",
+  "version": "1.0.0",
+  "description": "Générateur de prompts premium avec intégration Claude API",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}

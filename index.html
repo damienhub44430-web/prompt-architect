@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Architect — Générateur de Prompts Premium</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* ─── Design tokens ────────────────────────────────────── */
+    :root {
+      --bg-dark:        #0f0f1a;
+      --bg-card:        #16162a;
+      --bg-input:       #0a0a14;
+      --border:         #2a2a4a;
+      --border-focus:   #6366f1;
+      --primary:        #6366f1;
+      --primary-light:  #818cf8;
+      --accent:         #f472b6;
+      --accent-2:       #22d3ee;
+      --accent-3:       #a78bfa;
+      --text:           #e2e8f0;
+      --text-muted:     #94a3b8;
+      --text-dim:       #64748b;
+      --success:        #22c55e;
+      --error:          #ef4444;
+      --warning:        #f59e0b;
+      --grad-1:         linear-gradient(135deg, #6366f1 0%, #a78bfa 100%);
+      --grad-2:         linear-gradient(135deg, #f472b6 0%, #fb923c 100%);
+      --grad-3:         linear-gradient(135deg, #22d3ee 0%, #6366f1 100%);
+      --grad-success:   linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      --shadow-glow:    0 0 40px rgba(99,102,241,.15);
+      --shadow-card:    0 4px 24px rgba(0,0,0,.3);
+      --radius:         20px;
+    }
+
+    /* ─── Reset ────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family:'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── Animated background ──────────────────────────────── */
+    .bg-mesh {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(99,102,241,.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(244,114,182,.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(34,211,238,.04) 0%, transparent 60%);
+    }
+    .orb {
+      position:fixed; border-radius:50%; filter:blur(80px);
+      opacity:.3; pointer-events:none; z-index:0;
+      animation: float 20s infinite ease-in-out;
+    }
+    .orb-1 { width:400px;height:400px;background:var(--primary);top:-10%;left:-10%;animation-delay:0s; }
+    .orb-2 { width:300px;height:300px;background:var(--accent);bottom:-5%;right:-5%;animation-delay:-7s; }
+    .orb-3 { width:250px;height:250px;background:var(--accent-2);top:40%;left:60%;animation-delay:-14s; }
+
+    @keyframes float {
+      0%,100% { transform:translate(0,0) scale(1); }
+      33%      { transform:translate(30px,-50px) scale(1.1); }
+      66%      { transform:translate(-20px,30px) scale(.9); }
+    }
+
+    /* ─── Layout ───────────────────────────────────────────── */
+    .container {
+      position:relative; z-index:1;
+      max-width:1440px; margin:0 auto; padding:2rem;
+    }
+
+    header { text-align:center; padding:3rem 0 2rem; }
+
+    .logo {
+      display:inline-flex; align-items:center; gap:12px; margin-bottom:1.5rem;
+    }
+    .logo-icon {
+      width:48px; height:48px; background:var(--grad-1); border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:24px; box-shadow:0 4px 20px rgba(99,102,241,.4);
+    }
+    .logo-text {
+      font-size:2rem; font-weight:800;
+      background:var(--grad-1); -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .tagline { color:var(--text-muted); font-size:1.05rem; max-width:600px; margin:0 auto; line-height:1.7; }
+
+    /* ─── Progress steps ────────────────────────────────────── */
+    .progress-container {
+      display:flex; justify-content:center; gap:8px;
+      margin:2rem 0 3rem; flex-wrap:wrap;
+    }
+    .progress-step {
+      display:flex; align-items:center; gap:8px;
+      padding:8px 18px; border-radius:100px;
+      background:var(--bg-card); border:1px solid var(--border);
+      cursor:pointer; transition:all .3s; font-size:.85rem; font-weight:500;
+    }
+    .progress-step:hover { border-color:var(--border-focus); }
+    .progress-step.active {
+      background:var(--grad-1); border-color:transparent; color:#fff;
+      box-shadow:0 4px 20px rgba(99,102,241,.3);
+    }
+    .progress-step.completed {
+      background:rgba(34,197,94,.15); border-color:var(--success); color:var(--success);
+    }
+    .step-num {
+      width:24px; height:24px; border-radius:50%;
+      background:rgba(255,255,255,.1); display:flex;
+      align-items:center; justify-content:center;
+      font-size:.75rem; font-weight:700;
+    }
+    .progress-step.active .step-num { background:rgba(255,255,255,.2); }
+
+    /* ─── Main grid ─────────────────────────────────────────── */
+    .main-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start;
+    }
+    @media (max-width:1024px) { .main-grid { grid-template-columns:1fr; } }
+
+    /* ─── Cards ─────────────────────────────────────────────── */
+    .card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--radius); padding:2rem;
+      box-shadow:var(--shadow-card); transition:border-color .3s, box-shadow .3s;
+    }
+    .card:hover { border-color:var(--border-focus); box-shadow:var(--shadow-glow); }
+
+    .card-header { display:flex; align-items:center; gap:12px; margin-bottom:1.5rem; }
+    .card-icon {
+      width:40px; height:40px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+    }
+    .card-title  { font-size:1.2rem; font-weight:700; }
+    .card-subtitle { color:var(--text-muted); font-size:.88rem; margin-top:2px; }
+
+    /* ─── Form elements ──────────────────────────────────────── */
+    .form-group { margin-bottom:1.5rem; }
+    .form-label { display:block; font-weight:600; font-size:.9rem; margin-bottom:.5rem; }
+    .form-label .opt { color:var(--text-dim); font-weight:400; font-size:.8rem; }
+    .form-hint { color:var(--text-dim); font-size:.78rem; margin-top:.3rem; line-height:1.45; }
+
+    input[type="text"], textarea, select {
+      width:100%; padding:12px 16px;
+      background:var(--bg-input); border:1px solid var(--border);
+      border-radius:12px; color:var(--text);
+      font-family:'Inter', sans-serif; font-size:.95rem;
+      transition:border-color .3s, box-shadow .3s; outline:none;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color:var(--border-focus);
+      box-shadow:0 0 0 3px rgba(99,102,241,.15);
+    }
+    textarea { resize:vertical; min-height:100px; line-height:1.6; }
+    select {
+      cursor:pointer; appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 12px center; padding-right:40px;
+    }
+    select option { background:var(--bg-card); }
+
+    /* ─── Tags ───────────────────────────────────────────────── */
+    .tag-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag {
+      padding:7px 15px; border-radius:100px;
+      background:var(--bg-input); border:1px solid var(--border);
+      cursor:pointer; transition:all .2s; font-size:.83rem; font-weight:500; user-select:none;
+    }
+    .tag:hover { border-color:var(--primary-light); color:var(--primary-light); }
+    .tag.selected {
+      background:var(--grad-1); border-color:transparent; color:#fff;
+      box-shadow:0 2px 12px rgba(99,102,241,.3);
+    }
+
+    /* ─── Sliders ────────────────────────────────────────────── */
+    .slider-row { display:flex; align-items:center; gap:1rem; }
+    input[type="range"] {
+      flex:1; -webkit-appearance:none; height:6px;
+      border-radius:3px; background:var(--bg-input); outline:none; cursor:pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance:none; width:20px; height:20px; border-radius:50%;
+      background:var(--grad-1); cursor:pointer;
+      box-shadow:0 2px 10px rgba(99,102,241,.4); transition:transform .2s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover { transform:scale(1.2); }
+    .slider-label { min-width:120px; font-weight:700; color:var(--primary-light); font-size:.95rem; text-align:center; }
+
+    /* ─── Buttons ────────────────────────────────────────────── */
+    .btn {
+      padding:11px 22px; border-radius:12px; border:none;
+      font-family:'Inter', sans-serif; font-weight:600; font-size:.92rem;
+      cursor:pointer; transition:all .25s;
+      display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
+    }
+    .btn:disabled { opacity:.5; cursor:not-allowed; transform:none !important; }
+    .btn-primary {
+      background:var(--grad-1); color:#fff;
+      box-shadow:0 4px 20px rgba(99,102,241,.3);
+    }
+    .btn-primary:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 30px rgba(99,102,241,.4); }
+    .btn-secondary {
+      background:var(--bg-input); color:var(--text); border:1px solid var(--border);
+    }
+    .btn-secondary:hover:not(:disabled) { border-color:var(--primary-light); color:var(--primary-light); }
+    .btn-success {
+      background:var(--grad-success); color:#fff;
+      box-shadow:0 4px 20px rgba(34,197,94,.3);
+    }
+    .btn-success:hover:not(:disabled) { transform:translateY(-2px); }
+    .btn-claude {
+      background:linear-gradient(135deg,#c7502a 0%,#e8824b 100%);
+      color:#fff; font-size:1rem; padding:14px 28px;
+      box-shadow:0 4px 20px rgba(199,80,42,.35);
+    }
+    .btn-claude:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 30px rgba(199,80,42,.45); }
+    .btn-group { display:flex; gap:10px; flex-wrap:wrap; margin-top:1.5rem; }
+
+    /* ─── Step sections ──────────────────────────────────────── */
+    .step-section { display:none; animation:fadeUp .35s ease; }
+    .step-section.active { display:block; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(10px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ─── Templates ──────────────────────────────────────────── */
+    .template-grid {
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(170px,1fr)); gap:10px;
+    }
+    .tpl-card {
+      padding:1.1rem; border-radius:14px;
+      background:var(--bg-input); border:1px solid var(--border);
+      cursor:pointer; transition:all .3s; text-align:center;
+    }
+    .tpl-card:hover { border-color:var(--primary-light); transform:translateY(-3px); box-shadow:0 8px 24px rgba(99,102,241,.15); }
+    .tpl-card.selected { border-color:var(--primary); background:rgba(99,102,241,.08); }
+    .tpl-icon { font-size:1.8rem; margin-bottom:.4rem; }
+    .tpl-name { font-weight:600; font-size:.88rem; margin-bottom:.2rem; }
+    .tpl-desc { font-size:.73rem; color:var(--text-dim); }
+
+    /* ─── Preset chips ───────────────────────────────────────── */
+    .presets { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:.75rem; }
+    .chip {
+      padding:5px 13px; border-radius:100px;
+      background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.2);
+      color:var(--primary-light); font-size:.78rem; cursor:pointer; transition:all .2s;
+    }
+    .chip:hover { background:rgba(99,102,241,.2); border-color:var(--primary); }
+
+    /* ─── Right panel: output ────────────────────────────────── */
+    .output-col {
+      position:sticky; top:2rem; display:flex; flex-direction:column; gap:1.5rem;
+    }
+
+    .output-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; }
+    .badge {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:3px 11px; border-radius:100px; font-size:.72rem; font-weight:700;
+    }
+    .badge-premium  { background:var(--grad-2); color:#fff; }
+
+    .output-area {
+      background:var(--bg-input); border:1px solid var(--border);
+      border-radius:14px; padding:1.4rem;
+      font-family:'JetBrains Mono', monospace; font-size:.88rem;
+      line-height:1.75; color:var(--text); min-height:280px;
+      white-space:pre-wrap; overflow-wrap:break-word;
+    }
+    .output-area .ph  { color:var(--text-dim); font-style:italic; }
+    .output-area .sec { color:var(--accent-2); font-weight:700; }
+    .output-area .hl  { color:var(--accent); font-weight:600; }
+    .output-area .val { color:var(--primary-light); }
+
+    .output-stats {
+      display:flex; gap:1.5rem; flex-wrap:wrap;
+      padding-top:1rem; margin-top:1rem; border-top:1px solid var(--border);
+    }
+    .stat { display:flex; flex-direction:column; gap:2px; }
+    .stat-label { font-size:.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.5px; }
+    .stat-value { font-weight:700; font-size:1.05rem; }
+
+    /* ─── Claude action card ─────────────────────────────────── */
+    .claude-card { border-color:rgba(199,80,42,.3); }
+    .claude-card:hover { border-color:rgba(232,130,75,.5); box-shadow:0 0 40px rgba(199,80,42,.1); }
+
+    .model-row {
+      display:grid; grid-template-columns:1fr auto; gap:12px; align-items:end;
+      margin-bottom:1.25rem;
+    }
+    .tokens-row { margin-bottom:1.25rem; }
+
+    /* Response area */
+    .response-area {
+      background:var(--bg-input); border:1px solid var(--border);
+      border-radius:14px; padding:1.4rem;
+      font-family:'Inter', sans-serif; font-size:.93rem;
+      line-height:1.8; color:var(--text); min-height:100px;
+      white-space:pre-wrap; overflow-wrap:break-word;
+      display:none;
+    }
+    .response-area.visible { display:block; }
+
+    /* Loading spinner */
+    .spinner {
+      display:inline-block; width:18px; height:18px;
+      border:2px solid rgba(255,255,255,.3);
+      border-top-color:#fff; border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* Error / success banners */
+    .banner {
+      padding:12px 16px; border-radius:12px;
+      font-size:.88rem; font-weight:500; margin-bottom:1rem;
+      display:none;
+    }
+    .banner.visible { display:flex; align-items:center; gap:10px; }
+    .banner-error   { background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.3); color:#fca5a5; }
+    .banner-success { background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.3); color:#86efac; }
+
+    /* Token usage chips */
+    .usage-row {
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:.75rem; display:none;
+    }
+    .usage-row.visible { display:flex; }
+    .usage-chip {
+      padding:4px 12px; border-radius:100px;
+      background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.2);
+      font-size:.75rem; color:var(--primary-light); font-weight:500;
+    }
+
+    /* Cursor blink for typewriter */
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    .cursor { animation:blink 1s step-start infinite; }
+
+    /* ─── Toast ──────────────────────────────────────────────── */
+    .toast {
+      position:fixed; bottom:2rem; right:2rem;
+      padding:.9rem 1.4rem; border-radius:12px;
+      background:var(--bg-card); border:1px solid var(--success);
+      color:var(--success); font-weight:600; font-size:.9rem;
+      box-shadow:0 8px 32px rgba(0,0,0,.4);
+      transform:translateY(120px); opacity:0;
+      transition:all .4s ease; z-index:1000;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+
+    /* ─── Scrollbar ──────────────────────────────────────────── */
+    ::-webkit-scrollbar        { width:8px; }
+    ::-webkit-scrollbar-track  { background:var(--bg-dark); }
+    ::-webkit-scrollbar-thumb  { background:var(--border); border-radius:4px; }
+    ::-webkit-scrollbar-thumb:hover { background:var(--border-focus); }
+
+    /* ─── Mobile ─────────────────────────────────────────────── */
+    @media (max-width:768px) {
+      .container { padding:1rem; }
+      header { padding:1.5rem 0; }
+      .logo-text { font-size:1.5rem; }
+      .card { padding:1.25rem; }
+      .template-grid { grid-template-columns:repeat(2,1fr); }
+      .model-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="container">
+    <!-- ── Header ── -->
+    <header>
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">Prompt Architect</div>
+      </div>
+      <p class="tagline">
+        Construisez des prompts premium structurés en 4 étapes — puis testez-les directement avec Claude.
+      </p>
+    </header>
+
+    <!-- ── Progress ── -->
+    <div class="progress-container">
+      <div class="progress-step active" data-step="1" onclick="goToStep(1)">
+        <span class="step-num">1</span><span>Base &amp; Objectif</span>
+      </div>
+      <div class="progress-step" data-step="2" onclick="goToStep(2)">
+        <span class="step-num">2</span><span>Contexte &amp; Rôle</span>
+      </div>
+      <div class="progress-step" data-step="3" onclick="goToStep(3)">
+        <span class="step-num">3</span><span>Format &amp; Contraintes</span>
+      </div>
+      <div class="progress-step" data-step="4" onclick="goToStep(4)">
+        <span class="step-num">4</span><span>Affiner &amp; Exporter</span>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <!-- ══════════════ LEFT: Form ══════════════ -->
+      <div class="card">
+
+        <!-- STEP 1 -->
+        <div class="step-section active" id="step-1">
+          <div class="card-header">
+            <div class="card-icon" style="background:var(--grad-1);">🎯</div>
+            <div>
+              <div class="card-title">Base &amp; Objectif</div>
+              <div class="card-subtitle">Définissez le fondement de votre prompt</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Choisissez un modèle de départ</label>
+            <div class="template-grid" id="templateGrid">
+              <div class="tpl-card selected" data-tpl="custom" onclick="selectTpl(this)">
+                <div class="tpl-icon">✨</div>
+                <div class="tpl-name">Personnalisé</div>
+                <div class="tpl-desc">À partir de zéro</div>
+              </div>
+              <div class="tpl-card" data-tpl="copywriting" onclick="selectTpl(this)">
+                <div class="tpl-icon">✍️</div>
+                <div class="tpl-name">Copywriting</div>
+                <div class="tpl-desc">Texte persuasif</div>
+              </div>
+              <div class="tpl-card" data-tpl="code" onclick="selectTpl(this)">
+                <div class="tpl-icon">💻</div>
+                <div class="tpl-name">Code / Dev</div>
+                <div class="tpl-desc">Programmation</div>
+              </div>
+              <div class="tpl-card" data-tpl="analysis" onclick="selectTpl(this)">
+                <div class="tpl-icon">📊</div>
+                <div class="tpl-name">Analyse</div>
+                <div class="tpl-desc">Data &amp; insights</div>
+              </div>
+              <div class="tpl-card" data-tpl="creative" onclick="selectTpl(this)">
+                <div class="tpl-icon">🎨</div>
+                <div class="tpl-name">Créatif</div>
+                <div class="tpl-desc">Idées &amp; concepts</div>
+              </div>
+              <div class="tpl-card" data-tpl="learning" onclick="selectTpl(this)">
+                <div class="tpl-icon">🎓</div>
+                <div class="tpl-name">Pédagogique</div>
+                <div class="tpl-desc">Explications claires</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Que voulez-vous accomplir ?</label>
+            <textarea id="objectif" placeholder="Ex : Rédiger un email de prospection B2B pour vendre un logiciel SaaS de gestion de projet..." oninput="updateOutput()"></textarea>
+            <div class="form-hint">Soyez précis sur le résultat attendu. Évitez les formulations vagues.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Domaine / Secteur d'activité</label>
+            <input type="text" id="domaine" placeholder="Ex : Marketing digital, Santé, Fintech, Éducation…" oninput="updateOutput()" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Public cible</label>
+            <input type="text" id="publicCible" placeholder="Ex : Startups tech, Médecins généralistes, Étudiants en master…" oninput="updateOutput()" />
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-section" id="step-2">
+          <div class="card-header">
+            <div class="card-icon" style="background:var(--grad-2);">🎭</div>
+            <div>
+              <div class="card-title">Contexte &amp; Rôle</div>
+              <div class="card-subtitle">Donnez une personnalité et un cadre à l'IA</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Rôle / Persona de l'IA</label>
+            <div class="presets">
+              <span class="chip" onclick="setPreset('role','Expert consultant stratégique')">Expert consultant</span>
+              <span class="chip" onclick="setPreset('role','Rédacteur senior créatif')">Rédacteur senior</span>
+              <span class="chip" onclick="setPreset('role','Développeur full-stack expérimenté')">Dev senior</span>
+              <span class="chip" onclick="setPreset('role','Professeur patient et pédagogue')">Professeur</span>
+              <span class="chip" onclick="setPreset('role','Analyste data rigoureux')">Analyste data</span>
+              <span class="chip" onclick="setPreset('role','Coach en productivité')">Coach</span>
+            </div>
+            <input type="text" id="role" placeholder="Ex : Rédacteur marketing B2B avec 10 ans d'expérience dans la tech…" oninput="updateOutput()" />
+            <div class="form-hint">Décrivez l'expertise, le ton et l'approche que l'IA doit adopter.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contexte &amp; Informations clés</label>
+            <textarea id="contexte" placeholder="Ex : Notre produit est une plateforme IA qui automatise les tâches répétitives. Notre avantage : prix 30 % inférieur avec plus de fonctionnalités…" oninput="updateOutput()"></textarea>
+            <div class="form-hint">Tout élément que l'IA doit connaître pour répondre pertinemment.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Ton &amp; Style</label>
+            <div class="tag-grid" id="toneTags">
+              <span class="tag" onclick="toggleTag(this,'tones')">Professionnel</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Conversationnel</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Autoritaire</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Amical</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Technique</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Inspirant</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Direct</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Élégant</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Humoristique</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Urgent</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Émotionnel</span>
+              <span class="tag" onclick="toggleTag(this,'tones')">Minimaliste</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-section" id="step-3">
+          <div class="card-header">
+            <div class="card-icon" style="background:var(--grad-3);">📐</div>
+            <div>
+              <div class="card-title">Format &amp; Contraintes</div>
+              <div class="card-subtitle">Structurez la sortie selon vos besoins</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Format de sortie</label>
+            <div class="tag-grid" id="formatTags">
+              <span class="tag selected" onclick="toggleTag(this,'formats')">Texte structuré</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Liste à puces</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Tableau</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Markdown</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">JSON</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Email</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Script</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Code commenté</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Rapport</span>
+              <span class="tag" onclick="toggleTag(this,'formats')">Présentation</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Longueur souhaitée</label>
+            <div class="slider-row">
+              <input type="range" id="lengthSlider" min="1" max="5" value="3" oninput="updateSliderLabels(); updateOutput()" />
+              <span class="slider-label" id="lengthValue">Moyen</span>
+            </div>
+            <div class="form-hint" style="margin-top:8px;">1 = Très court · 3 = Moyen · 5 = Très détaillé</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contraintes &amp; Exclusions <span class="opt">(ce qu'il ne faut PAS faire)</span></label>
+            <textarea id="contraintes" placeholder="Ex : Ne pas utiliser de jargon. Éviter les superlatifs. Ne pas dépasser 500 mots…" oninput="updateOutput()"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Exemple de référence <span class="opt">(optionnel)</span></label>
+            <textarea id="exemples" placeholder="Collez un exemple de bonne réponse ou décrivez le style attendu…" oninput="updateOutput()"></textarea>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step-section" id="step-4">
+          <div class="card-header">
+            <div class="card-icon" style="background:var(--grad-success);">🔧</div>
+            <div>
+              <div class="card-title">Affiner &amp; Exporter</div>
+              <div class="card-subtitle">Polissez votre prompt et exportez-le</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Instructions complémentaires</label>
+            <textarea id="instructions" placeholder="Ex : Commence par une accroche percutante. Termine par un appel à l'action…" oninput="updateOutput()"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mots-clés à inclure</label>
+            <input type="text" id="keywords" placeholder="Ex : ROI, automatisation, transformation digitale…" oninput="updateOutput()" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Niveau de créativité</label>
+            <div class="slider-row">
+              <span style="font-size:.78rem;color:var(--text-dim);">Strict</span>
+              <input type="range" id="creativitySlider" min="1" max="5" value="3" oninput="updateSliderLabels(); updateOutput()" />
+              <span style="font-size:.78rem;color:var(--text-dim);">Créatif</span>
+            </div>
+            <div style="text-align:center;margin-top:8px;font-weight:700;color:var(--primary-light);" id="creativityValue">Équilibré</div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-success" onclick="copyPrompt()">📋 Copier</button>
+            <button class="btn btn-primary" onclick="downloadPrompt()">💾 Télécharger</button>
+            <button class="btn btn-secondary" onclick="resetAll()">🔄 Réinitialiser</button>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="btn-group" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+          <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="display:none;">← Précédent</button>
+          <button class="btn btn-primary"   id="nextBtn" onclick="nextStep()">Suivant →</button>
+        </div>
+      </div>
+
+      <!-- ══════════════ RIGHT: Output + Claude ══════════════ -->
+      <div class="output-col">
+
+        <!-- Generated prompt -->
+        <div class="card">
+          <div class="output-header">
+            <div>
+              <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+                🚀 Prompt Généré
+                <span class="badge badge-premium">PREMIUM</span>
+              </div>
+              <div class="card-subtitle">Mis à jour en temps réel</div>
+            </div>
+          </div>
+
+          <div class="output-area" id="outputArea">
+            <span class="ph">Remplissez les champs à gauche pour construire votre prompt premium…</span>
+          </div>
+
+          <div class="output-stats">
+            <div class="stat">
+              <span class="stat-label">Mots</span>
+              <span class="stat-value" id="wordCount">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Caractères</span>
+              <span class="stat-value" id="charCount">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Sections</span>
+              <span class="stat-value" id="sectionCount">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Qualité</span>
+              <span class="stat-value" id="qualityScore">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Claude Integration -->
+        <div class="card claude-card">
+          <div class="card-header">
+            <div class="card-icon" style="background:linear-gradient(135deg,#c7502a,#e8824b);">🤖</div>
+            <div>
+              <div class="card-title">Tester avec Claude</div>
+              <div class="card-subtitle">Envoyez votre prompt directement à l'API</div>
+            </div>
+          </div>
+
+          <!-- Model + max tokens -->
+          <div class="model-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Modèle</label>
+              <select id="modelSelect">
+                <option value="claude-sonnet-4-5">claude-sonnet-4-5 — Équilibré (recommandé)</option>
+                <option value="claude-opus-4-5">claude-opus-4-5 — Le plus puissant</option>
+                <option value="claude-haiku-3-5">claude-haiku-3-5 — Ultra rapide</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="tokens-row">
+            <label class="form-label" style="margin-bottom:.4rem;">Tokens max en sortie</label>
+            <div class="slider-row">
+              <input type="range" id="maxTokensSlider" min="256" max="4096" step="256" value="2048"
+                     oninput="document.getElementById('maxTokensValue').textContent = this.value + ' tokens';" />
+              <span class="slider-label" id="maxTokensValue">2048 tokens</span>
+            </div>
+          </div>
+
+          <!-- Error / success banners -->
+          <div class="banner banner-error" id="errorBanner"></div>
+          <div class="banner banner-success" id="successBanner"></div>
+
+          <!-- Send button -->
+          <button class="btn btn-claude" id="sendBtn" onclick="sendToClaude()" style="width:100%;justify-content:center;">
+            ✦ Envoyer à Claude
+          </button>
+
+          <!-- Token usage -->
+          <div class="usage-row" id="usageRow">
+            <span class="usage-chip" id="inputTokens">Entrée : — tokens</span>
+            <span class="usage-chip" id="outputTokens">Sortie : — tokens</span>
+            <span class="usage-chip" id="usedModel">Modèle : —</span>
+          </div>
+
+          <!-- Response -->
+          <div class="response-area" id="responseArea"></div>
+        </div>
+
+      </div><!-- /output-col -->
+    </div><!-- /main-grid -->
+  </div><!-- /container -->
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* ─── State ─────────────────────────────────────────────── */
+    let currentStep = 1;
+    const TOTAL_STEPS = 4;
+    let selectedTones   = [];
+    let selectedFormats = ['Texte structuré'];
+    let promptPlainText = '';
+
+    /* ─── Templates ─────────────────────────────────────────── */
+    const TEMPLATES = {
+      custom:      { role:'', objectif:'', contexte:'' },
+      copywriting: {
+        role:     'Rédacteur marketing senior spécialisé en copywriting persuasif et conversion',
+        objectif: 'Rédiger un texte de vente percutant qui convertit les prospects en clients',
+        contexte: 'Produit/service : [décrivez]. Cible : [décrivez]. Objectif : [clics, achats, inscription…]',
+      },
+      code: {
+        role:     'Développeur full-stack senior avec expertise en architecture logicielle et clean code',
+        objectif: 'Générer du code propre, documenté et optimisé pour résoudre le problème décrit',
+        contexte: 'Stack : [langages/frameworks]. Niveau : [débutant/intermédiaire/avancé]. Contraintes : [performance, sécurité…]',
+      },
+      analysis: {
+        role:     'Analyste data senior avec expertise en business intelligence et interprétation stratégique',
+        objectif: 'Analyser les données fournies et en extraire des insights actionnables',
+        contexte: 'Jeu de données : [décrivez]. Métriques clés : [KPIs]. Période : [délai]',
+      },
+      creative: {
+        role:     'Directeur créatif avec 15 ans d'expérience en idéation et conception',
+        objectif: 'Générer des concepts créatifs originaux et faisables pour le projet décrit',
+        contexte: 'Domaine : [design, rédaction, vidéo…]. Contraintes : [budget, temps]. Références : [exemples]',
+      },
+      learning: {
+        role:     'Professeur universitaire passionné, expert en vulgarisation scientifique',
+        objectif: 'Expliquer un concept complexe de manière claire, structurée et accessible',
+        contexte: 'Sujet : [décrivez]. Niveau : [débutant/expert]. Prérequis : [savoirs préalables]',
+      },
+    };
+
+    /* ─── Template selection ─────────────────────────────────── */
+    function selectTpl(el) {
+      document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      const t = TEMPLATES[el.dataset.tpl];
+      if (t && el.dataset.tpl !== 'custom') {
+        document.getElementById('role').value     = t.role;
+        document.getElementById('objectif').value = t.objectif;
+        document.getElementById('contexte').value = t.contexte;
+      }
+      updateOutput();
+    }
+
+    function setPreset(field, value) {
+      document.getElementById(field).value = value;
+      updateOutput();
+    }
+
+    /* ─── Tags ───────────────────────────────────────────────── */
+    function toggleTag(el, group) {
+      el.classList.toggle('selected');
+      if (group === 'tones') {
+        selectedTones = [...document.querySelectorAll('#toneTags .tag.selected')].map(t => t.textContent);
+      } else {
+        selectedFormats = [...document.querySelectorAll('#formatTags .tag.selected')].map(t => t.textContent);
+        // Ensure at least one format is selected
+        if (selectedFormats.length === 0) {
+          el.classList.add('selected');
+          selectedFormats = [el.textContent];
+        }
+      }
+      updateOutput();
+    }
+
+    /* ─── Slider labels ──────────────────────────────────────── */
+    function updateSliderLabels() {
+      const lenLabels  = ['Très court','Court','Moyen','Long','Très détaillé'];
+      const crLabels   = ['Strict','Modéré','Équilibré','Imaginatif','Très créatif'];
+      const lenVal     = +document.getElementById('lengthSlider').value;
+      const crVal      = +document.getElementById('creativitySlider').value;
+      document.getElementById('lengthValue').textContent    = lenLabels[lenVal - 1];
+      document.getElementById('creativityValue').textContent = crLabels[crVal - 1];
+    }
+
+    /* ─── Step navigation ────────────────────────────────────── */
+    function goToStep(n) {
+      if (n < 1 || n > TOTAL_STEPS) return;
+      document.querySelectorAll('.step-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(`step-${n}`).classList.add('active');
+      document.querySelectorAll('.progress-step').forEach(s => {
+        s.classList.remove('active','completed');
+        const sn = +s.dataset.step;
+        if (sn === n) s.classList.add('active');
+        else if (sn < n) s.classList.add('completed');
+      });
+      currentStep = n;
+      document.getElementById('prevBtn').style.display = n === 1 ? 'none' : 'inline-flex';
+      document.getElementById('nextBtn').textContent    = n === TOTAL_STEPS ? 'Terminer ✓' : 'Suivant →';
+      updateOutput();
+    }
+    const nextStep = () => currentStep < TOTAL_STEPS && goToStep(currentStep + 1);
+    const prevStep = () => currentStep > 1          && goToStep(currentStep - 1);
+
+    /* ─── HTML escape ────────────────────────────────────────── */
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    /* ─── Build prompt ───────────────────────────────────────── */
+    function updateOutput() {
+      const get = id => document.getElementById(id).value.trim();
+      const objectif   = get('objectif');
+      const domaine    = get('domaine');
+      const pubCible   = get('publicCible');
+      const role       = get('role');
+      const contexte   = get('contexte');
+      const contraintes= get('contraintes');
+      const exemples   = get('exemples');
+      const instructions= get('instructions');
+      const keywords   = get('keywords');
+      const lenVal     = +document.getElementById('lengthSlider').value;
+      const crVal      = +document.getElementById('creativitySlider').value;
+
+      if (!objectif && !role && !contexte) {
+        document.getElementById('outputArea').innerHTML =
+          '<span class="ph">Remplissez les champs à gauche pour construire votre prompt premium…</span>';
+        promptPlainText = '';
+        updateStats('', 0);
+        return;
+      }
+
+      let html = '', plain = '', sections = 0;
+
+      const addSection = (title, content, htmlContent) => {
+        html  += `<span class="sec">【 ${title} 】</span>\n${htmlContent}\n\n`;
+        plain += `【 ${title} 】\n${content}\n\n`;
+        sections++;
+      };
+
+      if (role) {
+        addSection('RÔLE',
+          `Tu agis en tant que ${role}.`,
+          `Tu agis en tant que <span class="hl">${esc(role)}</span>.`
+        );
+      }
+
+      if (objectif) {
+        addSection('OBJECTIF', objectif, `<span class="val">${esc(objectif)}</span>`);
+      }
+
+      if (domaine || pubCible) {
+        let plainCtx = '', htmlCtx = '';
+        if (domaine) {
+          plainCtx += `• Domaine : ${domaine}\n`;
+          htmlCtx  += `• Domaine : <span class="val">${esc(domaine)}</span>\n`;
+        }
+        if (pubCible) {
+          plainCtx += `• Public cible : ${pubCible}\n`;
+          htmlCtx  += `• Public cible : <span class="val">${esc(pubCible)}</span>\n`;
+        }
+        addSection('CONTEXTE', plainCtx.trim(), htmlCtx.trim());
+      }
+
+      if (contexte) {
+        addSection('INFORMATIONS CLÉS', contexte, `<span class="val">${esc(contexte)}</span>`);
+      }
+
+      if (selectedTones.length > 0) {
+        addSection('TON & STYLE',
+          `Adopte un ton ${selectedTones.join(', ')}.`,
+          `Adopte un ton <span class="hl">${esc(selectedTones.join(', '))}</span>.`
+        );
+      }
+
+      const lenLabels = [
+        'Très court (1-2 paragraphes)','Court (3-4 paragraphes)',
+        'Moyen (détaillé mais concis)','Long (complet et approfondi)',
+        'Très détaillé (exhaustif)',
+      ];
+      const fmtLine = [
+        selectedFormats.length > 0 ? `• Structure : ${selectedFormats.join(', ')}` : '',
+        `• Longueur : ${lenLabels[lenVal - 1]}`,
+      ].filter(Boolean).join('\n');
+      addSection('FORMAT DE SORTIE', fmtLine,
+        fmtLine
+          .replace(/^• Structure : (.+)$/m, `• Structure : <span class="val">$1</span>`)
+          .replace(/^• Longueur : (.+)$/m,  `• Longueur : <span class="val">$1</span>`)
+      );
+
+      if (contraintes) {
+        addSection('CONTRAINTES', contraintes, `<span class="val">${esc(contraintes)}</span>`);
+      }
+      if (exemples) {
+        addSection('EXEMPLE DE RÉFÉRENCE', exemples, `<span class="val">${esc(exemples)}</span>`);
+      }
+      if (instructions) {
+        addSection('INSTRUCTIONS COMPLÉMENTAIRES', instructions, `<span class="val">${esc(instructions)}</span>`);
+      }
+      if (keywords) {
+        addSection('TERMINOLOGIE',
+          `Intègre naturellement ces termes : ${keywords}.`,
+          `Intègre naturellement ces termes : <span class="hl">${esc(keywords)}</span>.`
+        );
+      }
+
+      const crLabels = [
+        'Sois strict et factuel. Suis les instructions à la lettre.',
+        'Reste principalement factuel avec légèrement d'initiative.',
+        'Équilibre entre structure et créativité.',
+        'Fais preuve d'imagination tout en respectant le cadre.',
+        'Sois très créatif et original, pense hors des sentiers battus.',
+      ];
+      addSection('NIVEAU DE CRÉATIVITÉ', crLabels[crVal - 1], `<span class="val">${esc(crLabels[crVal - 1])}</span>`);
+
+      const directive = 'Réponds de manière pertinente, structurée et actionnable. Chaque section doit apporter de la valeur.';
+      html  += `<span class="sec">【 DIRECTIVE FINALE 】</span>\n<span class="val">${esc(directive)}</span>`;
+      plain += `【 DIRECTIVE FINALE 】\n${directive}`;
+      sections++;
+
+      document.getElementById('outputArea').innerHTML = html;
+      promptPlainText = plain;
+      updateStats(plain, sections);
+    }
+
+    function updateStats(text, sections) {
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      document.getElementById('wordCount').textContent   = words;
+      document.getElementById('charCount').textContent   = text.length;
+      document.getElementById('sectionCount').textContent= sections;
+      let q = '—';
+      if (sections >= 8) q = '🔥 Exceptionnel';
+      else if (sections >= 6) q = '⭐ Excellent';
+      else if (sections >= 4) q = '✅ Bon';
+      else if (sections > 0)  q = '📝 En cours';
+      document.getElementById('qualityScore').textContent = q;
+    }
+
+    /* ─── Export ─────────────────────────────────────────────── */
+    function copyPrompt() {
+      if (!promptPlainText) { showToast('⚠️ Générez d'abord un prompt.'); return; }
+      navigator.clipboard.writeText(promptPlainText)
+        .then(() => showToast('✅ Prompt copié dans le presse-papiers !'))
+        .catch(() => showToast('❌ Impossible de copier. Utilisez Ctrl+C.'));
+    }
+
+    function downloadPrompt() {
+      if (!promptPlainText) { showToast('⚠️ Générez d'abord un prompt.'); return; }
+      const blob = new Blob([promptPlainText], { type:'text/plain;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = Object.assign(document.createElement('a'), { href:url, download:'prompt-premium.txt' });
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('💾 Prompt téléchargé !');
+    }
+
+    function resetAll() {
+      if (!confirm('Réinitialiser tous les champs ?')) return;
+      document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+      document.querySelectorAll('.tag.selected').forEach(el => el.classList.remove('selected'));
+      selectedTones = [];
+      selectedFormats = ['Texte structuré'];
+      document.querySelector('#formatTags .tag').classList.add('selected');
+      document.getElementById('lengthSlider').value    = 3;
+      document.getElementById('creativitySlider').value = 3;
+      document.getElementById('maxTokensSlider').value  = 2048;
+      document.getElementById('maxTokensValue').textContent = '2048 tokens';
+      updateSliderLabels();
+      hideResponsePanel();
+      selectTpl(document.querySelector('[data-tpl="custom"]'));
+      goToStep(1);
+      showToast('🔄 Formulaire réinitialisé');
+    }
+
+    /* ─── Claude API call ────────────────────────────────────── */
+    async function sendToClaude() {
+      if (!promptPlainText) {
+        showBanner('error', '⚠️ Construisez d'abord un prompt en remplissant les champs.');
+        return;
+      }
+
+      const btn = document.getElementById('sendBtn');
+      const model     = document.getElementById('modelSelect').value;
+      const maxTokens = +document.getElementById('maxTokensSlider').value;
+
+      // UI: loading state
+      btn.disabled  = true;
+      btn.innerHTML = '<span class="spinner"></span> Envoi en cours…';
+      hideBanners();
+      hideResponsePanel();
+
+      try {
+        const res = await fetch('/.netlify/functions/claude', {
+          method:  'POST',
+          headers: { 'Content-Type':'application/json' },
+          body:    JSON.stringify({ prompt:promptPlainText, model, maxTokens }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || `Erreur HTTP ${res.status}`);
+        }
+
+        // Display response with typewriter effect
+        showResponseTypewriter(data.response);
+
+        // Usage chips
+        if (data.usage) {
+          document.getElementById('inputTokens').textContent  = `Entrée : ${data.usage.input_tokens} tokens`;
+          document.getElementById('outputTokens').textContent = `Sortie : ${data.usage.output_tokens} tokens`;
+          document.getElementById('usedModel').textContent    = `Modèle : ${data.model || model}`;
+          document.getElementById('usageRow').classList.add('visible');
+        }
+
+        showBanner('success', '✅ Réponse reçue de Claude.');
+
+      } catch (err) {
+        showBanner('error', `❌ ${err.message}`);
+      } finally {
+        btn.disabled  = false;
+        btn.innerHTML = '✦ Envoyer à Claude';
+      }
+    }
+
+    /* Typewriter animation */
+    function showResponseTypewriter(text) {
+      const area = document.getElementById('responseArea');
+      area.classList.add('visible');
+      area.textContent = '';
+      let i = 0;
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      cursor.textContent = '▌';
+      area.appendChild(cursor);
+
+      const CHUNK = 4; // chars per tick for speed
+      const tick = () => {
+        if (i < text.length) {
+          cursor.before(text.slice(i, i + CHUNK));
+          i += CHUNK;
+          setTimeout(tick, 12);
+        } else {
+          cursor.remove();
+        }
+      };
+      tick();
+    }
+
+    /* ─── Banners ────────────────────────────────────────────── */
+    function showBanner(type, msg) {
+      hideBanners();
+      const el = document.getElementById(type === 'error' ? 'errorBanner' : 'successBanner');
+      el.textContent = msg;
+      el.classList.add('visible');
+      if (type === 'success') setTimeout(() => el.classList.remove('visible'), 4000);
+    }
+    function hideBanners() {
+      document.getElementById('errorBanner').classList.remove('visible');
+      document.getElementById('successBanner').classList.remove('visible');
+    }
+    function hideResponsePanel() {
+      document.getElementById('responseArea').classList.remove('visible');
+      document.getElementById('responseArea').textContent = '';
+      document.getElementById('usageRow').classList.remove('visible');
+    }
+
+    /* ─── Toast ──────────────────────────────────────────────── */
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    /* ─── Init ───────────────────────────────────────────────── */
+    updateSliderLabels();
+    updateOutput();
+  </script>
+</body>
+</html>
