@@ -736,7 +736,7 @@
         contexte: 'Jeu de données : [décrivez]. Métriques clés : [KPIs]. Période : [délai]',
       },
       creative: {
-        role:     'Directeur créatif avec 15 ans d'expérience en idéation et conception',
+        role:     "Directeur créatif avec 15 ans d'expérience en idéation et conception",
         objectif: 'Générer des concepts créatifs originaux et faisables pour le projet décrit',
         contexte: 'Domaine : [design, rédaction, vidéo…]. Contraintes : [budget, temps]. Références : [exemples]',
       },
@@ -916,9 +916,9 @@
 
       const crLabels = [
         'Sois strict et factuel. Suis les instructions à la lettre.',
-        'Reste principalement factuel avec légèrement d'initiative.',
+        "Reste principalement factuel avec légèrement d'initiative.",
         'Équilibre entre structure et créativité.',
-        'Fais preuve d'imagination tout en respectant le cadre.',
+        "Fais preuve d'imagination tout en respectant le cadre.",
         'Sois très créatif et original, pense hors des sentiers battus.',
       ];
       addSection('NIVEAU DE CRÉATIVITÉ', crLabels[crVal - 1], `<span class="val">${esc(crLabels[crVal - 1])}</span>`);
@@ -948,14 +948,14 @@
 
     /* ─── Export ─────────────────────────────────────────────── */
     function copyPrompt() {
-      if (!promptPlainText) { showToast('⚠️ Générez d'abord un prompt.'); return; }
+      if (!promptPlainText) { showToast("⚠️ Générez d'abord un prompt."); return; }
       navigator.clipboard.writeText(promptPlainText)
         .then(() => showToast('✅ Prompt copié dans le presse-papiers !'))
         .catch(() => showToast('❌ Impossible de copier. Utilisez Ctrl+C.'));
     }
 
     function downloadPrompt() {
-      if (!promptPlainText) { showToast('⚠️ Générez d'abord un prompt.'); return; }
+      if (!promptPlainText) { showToast("⚠️ Générez d'abord un prompt."); return; }
       const blob = new Blob([promptPlainText], { type:'text/plain;charset=utf-8' });
       const url  = URL.createObjectURL(blob);
       const a    = Object.assign(document.createElement('a'), { href:url, download:'prompt-premium.txt' });
@@ -985,7 +985,7 @@
     /* ─── Claude API call ────────────────────────────────────── */
     async function sendToClaude() {
       if (!promptPlainText) {
-        showBanner('error', '⚠️ Construisez d'abord un prompt en remplissant les champs.');
+        showBanner('error', "⚠️ Construisez d'abord un prompt en remplissant les champs.");
         return;
       }
 
