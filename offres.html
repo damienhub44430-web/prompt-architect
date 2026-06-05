@@ -188,6 +188,37 @@
   }
   .offre-card.soon .price { color: var(--muted-2); }
 
+  /* Featured plan — badge centré (style pricing tech) */
+  .offre-card.featured .ribbon {
+    top: -13px; left: 50%; right: auto; transform: translateX(-50%);
+    padding: 7px 18px; font-size: 11px; letter-spacing: .6px;
+    box-shadow: 0 8px 20px rgba(17,181,199,.4); white-space: nowrap;
+  }
+
+  /* ─── Tableau comparatif ─── */
+  .cmp { margin-top: 66px; }
+  .cmp-table-wrap {
+    overflow-x: auto; margin-top: 30px;
+    border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); background: var(--surface);
+  }
+  .cmp-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 680px; }
+  .cmp-table th, .cmp-table td { padding: 13px 18px; text-align: center; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+  .cmp-table thead th { position: sticky; top: 0; background: var(--surface); }
+  .cmp-table thead .planname { font-weight: 800; font-size: 15px; letter-spacing: -.2px; }
+  .cmp-table thead .planprice { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+  .cmp-table thead .pop { display: inline-block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-d)); padding: 2px 8px; border-radius: 12px; margin-bottom: 5px; }
+  .cmp-table tbody td:first-child, .cmp-table thead th:first-child { text-align: left; font-weight: 600; color: var(--text); }
+  .cmp-table tbody td { color: #41505f; }
+  .cmp-table tbody td b { color: var(--accent-d); }
+  .cmp-table .col-feat { background: var(--accent-soft); }
+  .cmp-table thead th.col-feat { border-radius: 12px 12px 0 0; }
+  .cmp-table .yes { color: var(--ok); font-weight: 800; font-size: 16px; }
+  .cmp-table .muted { color: var(--muted-2); }
+  .cmp-table tr:last-child td { border-bottom: none; }
+  .cmp-table tbody tr:hover td { background: var(--line-soft); }
+  .cmp-table tbody tr:hover td.col-feat { background: #d6f1f4; }
+
   /* ─── Socle ─── */
   .socle { margin-top: 64px; }
   .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 30px; }
@@ -269,6 +300,7 @@
     <a href="#offres">Offres</a>
     <a href="#socle">Socle inclus</a>
     <a href="#options">Options</a>
+    <a href="#comparatif">Comparer</a>
   </nav>
   <div class="m-nav-cta">
     <a class="btn primary" href="#offres">Voir les offres</a>
@@ -335,7 +367,7 @@
         <div class="cap">🚐 5 transports · 24 pers. max/transport · +10 €/mois par bateau supp.</div>
 
         <ul>
-          <li><b>Socle complet</b> inclus + <b>alerte météo</b></li>
+          <li><b>Socle complet</b> assisté IA inclus</li>
           <li>Palanquées, mono-flotte &amp; channel manager</li>
           <li>Équipement, finance &amp; gestion des blocs</li>
           <li>Ventes boutique, CRM &amp; gestion documents</li>
@@ -352,14 +384,14 @@
         <div class="name">Full Center</div>
         <p class="who">La formule supérieure — transports illimités, IA incluse.</p>
 
-        <div class="price">990 €<small>/an</small></div>
-        <p class="price-alt">Facturation annuelle</p>
-        <p class="billing-note">Toutes les options IA incluses</p>
+        <div class="price" id="full-price">990 €<small>/an</small></div>
+        <p class="price-alt" id="full-alt">soit 82,50 €/mois, facturé annuellement</p>
+        <p class="billing-note" id="full-note">99 €/mois sans engagement</p>
 
         <div class="cap">♾️ Transports illimités (bateau/camionnette)</div>
 
         <ul>
-          <li><b>Socle complet illimité</b> + alerte météo</li>
+          <li><b>Socle complet illimité</b> (assisté IA, météo)</li>
           <li><b>Réseaux sociaux &amp; e-réputation inclus</b> (5 posts/jour, 5 articles/sem)</li>
           <li><b>Chatbot IA + widget réservation inclus</b></li>
           <li>Palanquées, flotte, channel manager, finance…</li>
@@ -427,11 +459,11 @@
       </div>
       <div class="feature">
         <div class="ico">🌦️</div>
-        <div class="ftitle">Alerte météo <span style="font-size:10px;font-weight:700;color:var(--accent-d);background:var(--accent-soft);padding:1px 6px;border-radius:10px;">Middle &amp; Full</span></div>
+        <div class="ftitle">Alerte météo</div>
         <div class="fdesc">Conditions et alertes pour sécuriser vos sorties.</div>
       </div>
     </div>
-    <p class="socle-more">Socle inclus intégralement dès la formule Freelance — l'<b>alerte météo</b> est incluse à partir de Middle Center.</p>
+    <p class="socle-more">Socle inclus intégralement dans les 3 offres — <b>alerte météo</b> et <b>assistance IA</b> comprises dès la formule Freelance.</p>
   </section>
 
   <!-- ─── Options ─── -->
@@ -482,11 +514,87 @@
       <div class="opt-card">
         <div class="ico">📲</div>
         <div class="oname">Notifications &amp; documents WhatsApp</div>
-        <div class="odesc">Envoyez notifications et documents à vos clients par WhatsApp, sous forme de <b>crédits</b>.</div>
-        <div class="oprice">10 €<small>/ 100 transferts</small></div>
+        <div class="odesc">Envoyez notifications et documents à vos clients par WhatsApp, sous forme de <b>crédits</b> — <b>1 push = 1 crédit</b>.</div>
+        <div class="oprice">10 €<small>/ 100 crédits</small></div>
         <div class="oadd">✓ Disponible sur les <b>3 offres</b>.</div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ─── Comparatif ─── -->
+  <section id="comparatif" class="cmp reveal">
+    <div class="sec-label">Tout comparer</div>
+    <h2>Comparez les offres</h2>
+    <p class="intro">Le détail, offre par offre. Le socle, l'alerte météo et l'assistance IA sont inclus partout.</p>
+
+    <div class="cmp-table-wrap">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Fonctionnalité</th>
+            <th><span class="planname">Freelance</span><span class="planprice">dès 19,90 €/mois</span></th>
+            <th class="col-feat"><span class="pop">Populaire</span><br><span class="planname">Middle Center</span><span class="planprice">dès 35,80 €/mois</span></th>
+            <th><span class="planname">Full Center</span><span class="planprice">990 €/an ou 99 €/mois</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Transports (bateau / camionnette)</td>
+            <td>1</td>
+            <td class="col-feat">5 <span class="muted">(+10 €/mois/bateau supp.)</span></td>
+            <td><b>Illimités</b></td>
+          </tr>
+          <tr>
+            <td>Capacité</td>
+            <td>8 max</td>
+            <td class="col-feat">24 / transport</td>
+            <td><b>Illimitée</b></td>
+          </tr>
+          <tr>
+            <td>Socle assisté par IA</td>
+            <td><span class="yes">✓</span></td>
+            <td class="col-feat"><span class="yes">✓</span></td>
+            <td><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>Alerte météo</td>
+            <td><span class="yes">✓</span></td>
+            <td class="col-feat"><span class="yes">✓</span></td>
+            <td><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>A · Réseaux sociaux &amp; e-réputation</td>
+            <td>14,90 € <span class="muted">· 1 post/j</span></td>
+            <td class="col-feat">14,90 € <span class="muted">· 3 posts/j</span></td>
+            <td><b>Inclus</b> <span class="muted">· 5 posts/j</span></td>
+          </tr>
+          <tr>
+            <td>B · Chatbot IA + widget réservation</td>
+            <td>14,90 €</td>
+            <td class="col-feat">14,90 €</td>
+            <td><b>Inclus</b></td>
+          </tr>
+          <tr>
+            <td>Full option IA (A + B)</td>
+            <td>24,90 €</td>
+            <td class="col-feat">24,90 €</td>
+            <td><b>Inclus</b></td>
+          </tr>
+          <tr>
+            <td>Site web &amp; e-boutique IA</td>
+            <td>Sur demande</td>
+            <td class="col-feat">Sur demande</td>
+            <td>Sur demande</td>
+          </tr>
+          <tr>
+            <td>Notifications WhatsApp <span class="muted">(1 push = 1 crédit)</span></td>
+            <td>10 € / 100</td>
+            <td class="col-feat">10 € / 100</td>
+            <td>10 € / 100</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -494,8 +602,8 @@
   <p class="footnote">
     <b>Freelance</b> — 1 transport (bateau/camionnette), capacité 8 max — <b>19,90 €/mois</b> (238,80 €/an) ou <b>24,90 €/mois</b> sans engagement, socle assisté IA inclus.
     <b>Middle Center</b> — 5 transports, 24 pers./transport (+10 €/mois par bateau supp.) — <b>35,80 €/mois</b> (430,80 €/an) ou <b>39,90 €/mois</b> sans engagement, socle + alerte météo.
-    <b>Full Center</b> — transports illimités, options IA incluses — <b>990 €/an</b>.
-    Options A &amp; B à 14,90 € · Full option IA 24,90 € · site &amp; e-boutique IA et WhatsApp (10 €/100 transferts) sur les 3 offres. Tarifs indicatifs en cours de validation.
+    <b>Full Center</b> — transports illimités, options IA incluses — <b>990 €/an</b> ou <b>99 €/mois</b>.
+    Options A &amp; B à 14,90 € · Full option IA 24,90 € · site &amp; e-boutique IA et WhatsApp (10 €/100 crédits, 1 push = 1 crédit) sur les 3 offres. Tarifs indicatifs en cours de validation.
   </p>
 </main>
 
@@ -542,6 +650,7 @@ function setBilling(mode) {
 
   var fP = document.getElementById('freelance-price'), fA = document.getElementById('freelance-alt'), fN = document.getElementById('freelance-note');
   var mP = document.getElementById('middle-price'),    mA = document.getElementById('middle-alt'),    mN = document.getElementById('middle-note');
+  var uP = document.getElementById('full-price'),      uA = document.getElementById('full-alt'),      uN = document.getElementById('full-note');
 
   if (mode === 'annuel') {
     fP.innerHTML = '19,90 €<small>/mois</small>';
@@ -550,6 +659,9 @@ function setBilling(mode) {
     mP.innerHTML = '35,80 €<small>/mois</small>';
     mA.textContent = 'soit 430,80 €/an, facturé annuellement';
     mN.textContent = '39,90 €/mois sans engagement';
+    uP.innerHTML = '990 €<small>/an</small>';
+    uA.textContent = 'soit 82,50 €/mois, facturé annuellement';
+    uN.textContent = '99 €/mois sans engagement';
   } else {
     fP.innerHTML = '24,90 €<small>/mois</small>';
     fA.textContent = 'sans engagement, résiliable à tout moment';
@@ -557,6 +669,9 @@ function setBilling(mode) {
     mP.innerHTML = '39,90 €<small>/mois</small>';
     mA.textContent = 'sans engagement, résiliable à tout moment';
     mN.textContent = 'Passez à l\'annuel : 35,80 €/mois (430,80 €/an)';
+    uP.innerHTML = '99 €<small>/mois</small>';
+    uA.textContent = 'sans engagement, résiliable à tout moment';
+    uN.textContent = 'Passez à l\'annuel : 990 €/an (2 mois offerts)';
   }
 }
 </script>
