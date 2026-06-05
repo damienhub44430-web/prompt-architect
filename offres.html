@@ -280,14 +280,14 @@
   <div class="inner">
     <span class="eyebrow">Trois offres · une seule plateforme</span>
     <h1>Pilotez votre activité,<br><span class="ocean-word">à votre échelle</span></h1>
-    <p class="lead">Du moniteur indépendant au réseau multi-sites, choisissez l'offre qui vous ressemble. <b>Freelance</b> et <b>Middle Center</b> sont prêtes — la troisième formule arrive très vite.</p>
+    <p class="lead">Du moniteur indépendant au centre multi-bateaux, choisissez l'offre qui vous ressemble : <b>Freelance</b>, <b>Middle Center</b> ou <b>Full Center</b>.</p>
   </div>
 </section>
 
 <!-- ─── Toggle engagement ─── -->
 <div class="toggle-wrap">
   <div class="toggle" role="group" aria-label="Choix de l'engagement">
-    <button id="btn-annuel" class="active" onclick="setBilling('annuel')">Engagement annuel<span class="save-tag">−20 %</span></button>
+    <button id="btn-annuel" class="active" onclick="setBilling('annuel')">Engagement annuel<span class="save-tag">jusqu'à −20 %</span></button>
     <button id="btn-mensuel" onclick="setBilling('mensuel')">Sans engagement</button>
   </div>
 </div>
@@ -299,8 +299,8 @@
     <div class="offre-grid">
 
       <!-- OFFRE 1 — FREELANCE -->
-      <article class="offre-card featured">
-        <span class="ribbon">Disponible</span>
+      <article class="offre-card">
+        <span class="ribbon" style="background:var(--line-soft);color:var(--muted);">Essentiel</span>
         <div class="name">Freelance</div>
         <p class="who">Le moniteur ou loueur indépendant — une seule unité (1 bateau <b>ou</b> 1 camionnette).</p>
 
@@ -324,16 +324,16 @@
       </article>
 
       <!-- OFFRE 2 — MIDDLE CENTER -->
-      <article class="offre-card">
-        <span class="ribbon" style="background:linear-gradient(135deg,#f59e0b,#d97706);">Nouveau</span>
+      <article class="offre-card featured">
+        <span class="ribbon">Le plus populaire</span>
         <div class="name">Middle Center</div>
-        <p class="who">Le centre intermédiaire — jusqu'à 5 transports et 10 instructeurs.</p>
+        <p class="who">Le centre intermédiaire — jusqu'à 5 bateaux et/ou camionnettes et 10 instructeurs.</p>
 
-        <div class="price">44,90 €<small>/mois</small></div>
-        <p class="price-alt">Offre socle <b>+ CMS</b> inclus</p>
-        <p class="billing-note">Engagement annuel · options à activer en plus</p>
+        <div class="price" id="middle-price">40,41 €<small>/mois</small></div>
+        <p class="price-alt" id="middle-alt">soit 484,92 €/an (−10 %), socle + CMS inclus</p>
+        <p class="billing-note" id="middle-note">44,90 €/mois sans engagement</p>
 
-        <div class="cap">🚐 5 transports · 👥 10 instructeurs</div>
+        <div class="cap">🚐 5 bateaux et/ou camionnettes · 👥 10 instructeurs</div>
 
         <ul>
           <li><b>Offre socle complète</b> incluse</li>
@@ -347,21 +347,28 @@
         <div class="cta"><a class="btn primary" href="#options">Personnaliser mon offre</a></div>
       </article>
 
-      <!-- OFFRE 3 — À VENIR -->
-      <article class="offre-card soon">
-        <div class="soon-badge">Bientôt disponible</div>
-        <div class="name">Offre 3</div>
-        <p class="who">La formule supérieure, pour les structures les plus exigeantes. À définir ensemble.</p>
-        <div class="price">—</div>
-        <p class="price-alt">Détails à venir</p>
-        <p class="billing-note" style="color:var(--muted);">En cours de préparation</p>
-        <div class="cap" style="background:var(--line-soft);border-color:var(--line);color:var(--muted);">À formaliser à l'étape suivante</div>
+      <!-- OFFRE 3 — FULL CENTER -->
+      <article class="offre-card">
+        <span class="ribbon" style="background:linear-gradient(135deg,var(--ink-2),var(--ink-3));">Tout inclus</span>
+        <div class="name">Full Center</div>
+        <p class="who">La formule supérieure — bateaux et camionnettes en illimité.</p>
+
+        <div class="price">Sur devis</div>
+        <p class="price-alt">Tarif à définir ensemble</p>
+        <p class="billing-note">Full option IA incluse</p>
+
+        <div class="cap">♾️ Bateaux &amp; camionnettes illimités</div>
+
         <ul>
-          <li>Tout le socle &amp; options incluses</li>
-          <li>Capacité maximale</li>
-          <li>Accompagnement renforcé à préciser</li>
+          <li><b>Offre socle complète</b> incluse</li>
+          <li><b>CMS / site web</b> inclus</li>
+          <li><b>Full option IA incluse</b> : chatbot + widget</li>
+          <li>Réseaux sociaux <b>3 posts/jour</b> + e-réputation</li>
+          <li>Boutique 500 articles en option (24 €/mois)</li>
+          <li>WhatsApp en option</li>
         </ul>
-        <div class="cta"><a class="btn ghost" href="#" aria-disabled="true">Bientôt</a></div>
+
+        <div class="cta"><a class="btn primary" href="#options">Nous contacter</a></div>
       </article>
 
     </div>
@@ -447,7 +454,7 @@
       <div class="opt-card">
         <div class="ico">🛒</div>
         <div class="oname">Boutique en ligne</div>
-        <div class="odesc">Vendez jusqu'à <b>150 articles</b> en ligne.</div>
+        <div class="odesc">Vendez en ligne — jusqu'à <b>150 articles</b> (Freelance &amp; Middle Center), <b>500 articles</b> sur Full Center.</div>
         <div class="oprice">24 €<small>/mois</small></div>
         <div class="oadd">Widget de réservation en option : <b>+14,90 €/mois</b>.</div>
       </div>
@@ -467,7 +474,7 @@
         <div class="oname">Pack Full option IA</div>
         <div class="odesc"><b>2 posts/jour</b> sur les réseaux + <b>1 article de blog/jour</b> + e-réputation + chatbot &amp; widget de réservation.</div>
         <div class="oprice">24,90 €<small>/mois</small></div>
-        <div class="oadd">Inclus sur <b>Middle Center</b> — ou au détail aux tarifs Freelance.</div>
+        <div class="oadd">Option sur <b>Middle Center</b> · <b>incluse sur Full Center</b> (3 posts/jour) · ou au détail aux tarifs Freelance.</div>
       </div>
 
     </div>
@@ -475,9 +482,10 @@
 
   <!-- ─── Footnote ─── -->
   <p class="footnote">
-    <b>Freelance</b> — 1 bateau <b>ou</b> 1 camionnette, capacité 8 max — <b>19,90 €/mois</b> (engagement annuel) ou <b>24,90 €/mois</b> sans engagement, offre socle incluse.
-    <b>Middle Center</b> — 5 transports, 10 instructeurs — <b>44,90 €/mois</b>, offre socle + CMS inclus.
-    Option <b>WhatsApp</b> (10 €/100 transferts, par crédits) disponible sur les 3 offres. Tarifs indicatifs en cours de validation — l'offre 3 sera formalisée à l'étape suivante.
+    <b>Freelance</b> — 1 bateau <b>ou</b> 1 camionnette, capacité 8 max — <b>19,90 €/mois</b> (annuel) ou <b>24,90 €/mois</b> sans engagement, socle inclus.
+    <b>Middle Center</b> — 5 bateaux et/ou camionnettes, 10 instructeurs — <b>44,90 €/mois</b> (−10 % en annuel), socle + CMS inclus.
+    <b>Full Center</b> — bateaux &amp; camionnettes illimités, Full option IA incluse — <b>tarif sur devis</b>.
+    Option <b>WhatsApp</b> (10 €/100 transferts, par crédits) disponible sur les 3 offres. Tarifs indicatifs en cours de validation.
   </p>
 </main>
 
@@ -519,19 +527,26 @@
 
 // Toggle engagement annuel / mensuel
 function setBilling(mode) {
-  var price = document.getElementById('freelance-price');
-  var alt   = document.getElementById('freelance-alt');
-  var note  = document.getElementById('freelance-note');
   document.getElementById('btn-annuel').classList.toggle('active', mode === 'annuel');
   document.getElementById('btn-mensuel').classList.toggle('active', mode === 'mensuel');
+
+  var fP = document.getElementById('freelance-price'), fA = document.getElementById('freelance-alt'), fN = document.getElementById('freelance-note');
+  var mP = document.getElementById('middle-price'),    mA = document.getElementById('middle-alt'),    mN = document.getElementById('middle-note');
+
   if (mode === 'annuel') {
-    price.innerHTML = '19,90 €<small>/mois</small>';
-    alt.textContent = 'soit 238,80 €/an, facturé annuellement';
-    note.textContent = 'Engagement 12 mois · 24,90 €/mois sans engagement';
+    fP.innerHTML = '19,90 €<small>/mois</small>';
+    fA.textContent = 'soit 238,80 €/an, facturé annuellement';
+    fN.textContent = '24,90 €/mois sans engagement';
+    mP.innerHTML = '40,41 €<small>/mois</small>';
+    mA.textContent = 'soit 484,92 €/an (−10 %), socle + CMS inclus';
+    mN.textContent = '44,90 €/mois sans engagement';
   } else {
-    price.innerHTML = '24,90 €<small>/mois</small>';
-    alt.textContent = 'sans engagement, résiliable à tout moment';
-    note.textContent = 'Passez à l\'annuel pour 19,90 €/mois (−20 %)';
+    fP.innerHTML = '24,90 €<small>/mois</small>';
+    fA.textContent = 'sans engagement, résiliable à tout moment';
+    fN.textContent = 'Passez à l\'annuel : 19,90 €/mois (−20 %)';
+    mP.innerHTML = '44,90 €<small>/mois</small>';
+    mA.textContent = 'sans engagement, socle + CMS inclus';
+    mN.textContent = 'Passez à l\'annuel : 40,41 €/mois (−10 %)';
   }
 }
 </script>
