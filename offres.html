@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos offres — Pilotez votre activité plongée</title>
+<meta name="description" content="Trois offres pour piloter votre activité : Freelance, et bientôt deux formules supérieures. Socle complet (planning, bateau, équipement, gaz, blocs, météo, palanquées) + options IA, e-réputation et boutique en ligne.">
+<meta name="theme-color" content="#071e32">
+<meta name="robots" content="noindex, follow">
+<style>
+  /* ─── Design tokens (palette océan — cohérente avec l'univers Nexus Pilote) ─── */
+  :root {
+    --bg:          #eef1f6;
+    --surface:     #ffffff;
+    --ink:         #0e1218;
+    --ink-2:       #161c24;
+    --ink-3:       #222a34;
+    --text:        #0f1620;
+    --muted:       #6a7480;
+    --muted-2:     #9aa3ad;
+    --line:        #e3e7ee;
+    --line-soft:   #eef1f5;
+    --accent:      #11b5c7;   /* teal océan */
+    --accent-d:    #0a8e9d;
+    --accent-soft: #e6f7f9;
+    --ok:          #10b981;
+    --warn:        #f59e0b;
+    --radius:      16px;
+    --radius-sm:   10px;
+    --shadow:      0 1px 2px rgba(16,22,32,.04), 0 8px 24px rgba(16,22,32,.06);
+    --font:        "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --motion-reveal: 0.6s;
+    --reveal-distance: 24px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow-x: clip; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    background: linear-gradient(180deg, #e8f4f7 0%, var(--bg) 12%, var(--bg) 100%);
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  a { text-decoration: none; color: inherit; }
+
+  /* ─── Nav ─── */
+  .m-nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 28px;
+    background: rgba(244,250,251,.88);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(17,181,199,.12);
+    transition: background .4s var(--motion-ease-out), box-shadow .4s var(--motion-ease-out), padding .4s var(--motion-ease-out);
+  }
+  .m-nav.is-scrolled {
+    background: rgba(244,250,251,.97);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom-color: rgba(17,181,199,.22);
+    box-shadow: 0 4px 24px rgba(7,50,62,.08);
+    padding-top: 10px; padding-bottom: 10px;
+  }
+  .m-nav .brand { display: flex; align-items: center; gap: 11px; }
+  .m-nav .brand .logo {
+    width: 38px; height: 38px; border-radius: 11px;
+    background: linear-gradient(135deg, var(--accent), #0a8e9d);
+    display: grid; place-items: center; color: #fff; flex: 0 0 auto;
+    box-shadow: 0 6px 16px rgba(17,181,199,.35);
+  }
+  .m-nav .brand .name { font-weight: 800; font-size: 16px; letter-spacing: -.2px; }
+  .m-nav .brand .sub { font-size: 11px; color: var(--muted); }
+  .m-nav-links {
+    display: flex; align-items: center; gap: 22px; margin-left: auto;
+    font-size: 14px; font-weight: 500; color: #41505f;
+  }
+  .m-nav-links a:hover { color: var(--accent-d); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    border: 1px solid transparent; transition: transform .15s var(--motion-ease-out), box-shadow .15s var(--motion-ease-out), background .15s;
+  }
+  .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-d)); color: #fff; box-shadow: 0 6px 16px rgba(17,181,199,.3); }
+  .btn.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(17,181,199,.4); }
+  .btn.ghost { background: transparent; border-color: var(--line); color: #41505f; }
+  .btn.ghost:hover { border-color: var(--accent); color: var(--accent-d); }
+
+  /* ─── Hero ─── */
+  .hero {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(17,181,199,.22) 0%, transparent 55%),
+      linear-gradient(165deg, #0d4f5c 0%, #0a3d52 35%, #071e32 100%);
+    color: #fff;
+    padding: 56px 28px 64px;
+    border-bottom: 1px solid rgba(126,232,247,.12);
+  }
+  .hero .inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+  .hero .eyebrow {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: #7ee8f7; background: rgba(17,181,199,.14);
+    border: 1px solid rgba(126,232,247,.25);
+    padding: 6px 14px; border-radius: 30px; margin-bottom: 18px;
+  }
+  .hero h1 { font-size: clamp(30px, 5vw, 46px); margin: 0 0 14px; letter-spacing: -.5px; line-height: 1.1; }
+  .hero h1 .ocean-word {
+    background: linear-gradient(120deg, #7ee8f7 0%, #11b5c7 55%, #67d6e4 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero .lead { color: rgba(200,230,238,.9); font-size: clamp(15px, 2vw, 18px); max-width: 640px; margin: 0 auto; }
+
+  /* ─── Engagement toggle ─── */
+  .toggle-wrap { display: flex; justify-content: center; margin: 30px 0 -28px; position: relative; z-index: 5; }
+  .toggle {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 40px; padding: 5px; box-shadow: var(--shadow);
+  }
+  .toggle button {
+    border: none; background: transparent; cursor: pointer;
+    font-family: var(--font); font-size: 14px; font-weight: 600; color: var(--muted);
+    padding: 9px 20px; border-radius: 30px; transition: background .2s, color .2s;
+  }
+  .toggle button.active { background: linear-gradient(135deg, var(--accent), var(--accent-d)); color: #fff; }
+  .toggle .save-tag {
+    font-size: 10.5px; font-weight: 700; color: var(--ok);
+    background: rgba(16,185,129,.12); padding: 2px 7px; border-radius: 20px; margin-left: 6px;
+  }
+
+  /* ─── Layout ─── */
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 56px 28px 72px; }
+  .sec-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px;
+    color: var(--accent-d); margin-bottom: 8px; text-align: center;
+  }
+  .wrap h2 { font-size: clamp(22px, 3vw, 28px); margin: 0 0 10px; letter-spacing: -.2px; text-align: center; }
+  .wrap .intro { font-size: 15px; color: var(--muted); max-width: 720px; margin: 0 auto 8px; text-align: center; }
+
+  /* ─── Reveal ─── */
+  .reveal { opacity: 0; transform: translateY(var(--reveal-distance)); transition: opacity var(--motion-reveal) var(--motion-ease-out), transform var(--motion-reveal) var(--motion-ease-out); }
+  .reveal.is-visible { opacity: 1; transform: none; }
+
+  /* ─── Pricing grid ─── */
+  .offre-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 34px; align-items: stretch; }
+  .offre-card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 28px 24px;
+    box-shadow: var(--shadow); position: relative;
+    display: flex; flex-direction: column;
+  }
+  .offre-card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-soft), 0 12px 32px rgba(17,181,199,.18);
+    transform: translateY(-6px);
+  }
+  .offre-card.soon { background: linear-gradient(180deg, #f7f9fb 0%, var(--surface) 60%); border-style: dashed; }
+  .ribbon {
+    position: absolute; top: 16px; right: 16px;
+    font-size: 10px; font-weight: 700; padding: 5px 11px; border-radius: 20px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-d)); color: #fff;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .offre-card .name { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .7px; color: var(--accent-d); }
+  .offre-card .who { font-size: 13.5px; color: var(--muted); margin: 6px 0 18px; min-height: 38px; }
+  .offre-card .price { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+  .offre-card .price small { font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+  .offre-card .price-alt { font-size: 13px; color: var(--muted); margin: 8px 0 2px; min-height: 20px; }
+  .offre-card .billing-note { font-size: 12px; color: var(--accent-d); font-weight: 600; margin-bottom: 18px; }
+  .offre-card .cap {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12.5px; font-weight: 600; color: #41505f;
+    background: var(--accent-soft); border: 1px solid rgba(17,181,199,.2);
+    padding: 7px 12px; border-radius: 10px; margin-bottom: 18px;
+  }
+  .offre-card ul { list-style: none; margin: 0 0 20px; padding: 0; font-size: 13.5px; flex: 1; }
+  .offre-card li { padding: 8px 0 8px 24px; position: relative; border-top: 1px solid var(--line-soft); color: #303a45; }
+  .offre-card li:first-child { border-top: none; }
+  .offre-card li::before { content: "✓"; position: absolute; left: 0; top: 8px; color: var(--ok); font-weight: 800; font-size: 13px; }
+  .offre-card .cta { margin-top: auto; }
+  .offre-card .cta .btn { width: 100%; justify-content: center; }
+  .offre-card.soon .soon-badge {
+    display: inline-block; font-size: 11px; font-weight: 700; color: var(--muted);
+    background: var(--line-soft); padding: 5px 12px; border-radius: 20px; margin-bottom: 14px;
+  }
+  .offre-card.soon .price { color: var(--muted-2); }
+
+  /* ─── Socle ─── */
+  .socle { margin-top: 64px; }
+  .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 30px; }
+  .feature {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius-sm); padding: 18px 16px;
+    box-shadow: var(--shadow); transition: transform .15s var(--motion-ease-out), border-color .15s;
+  }
+  .feature:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .feature .ico {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--accent-soft); display: grid; place-items: center;
+    font-size: 19px; margin-bottom: 10px;
+  }
+  .feature .ftitle { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .feature .fdesc { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+  .socle-more { text-align: center; font-size: 13.5px; color: var(--muted); margin-top: 20px; }
+
+  /* ─── Options ─── */
+  .options { margin-top: 64px; }
+  .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+  .opt-card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 24px 22px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+  }
+  .opt-card .ico {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-soft), #d3f1f4);
+    display: grid; place-items: center; font-size: 22px; margin-bottom: 14px;
+  }
+  .opt-card .oname { font-size: 16px; font-weight: 800; letter-spacing: -.2px; }
+  .opt-card .odesc { font-size: 13px; color: var(--muted); margin: 6px 0 14px; flex: 1; line-height: 1.5; }
+  .opt-card .oprice { font-size: 26px; font-weight: 800; color: var(--accent-d); letter-spacing: -.5px; }
+  .opt-card .oprice small { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+  .opt-card .oadd { font-size: 12.5px; color: var(--muted); margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .opt-card .oadd b { color: var(--accent-d); }
+
+  /* ─── Footnote ─── */
+  .footnote {
+    max-width: 1100px; margin: 56px auto 0; padding: 22px 28px 0;
+    border-top: 1px solid var(--line); font-size: 13px; color: var(--muted);
+  }
+  .footnote b { color: var(--text); }
+
+  footer.page-footer {
+    text-align: center; padding: 40px 28px 56px;
+    background: linear-gradient(180deg, #e8f4f7 0%, #dceef2 100%);
+    border-top: 1px solid rgba(17,181,199,.12);
+    font-size: 13px; color: #4a6270; margin-top: 48px;
+  }
+
+  @media (max-width: 980px) {
+    .offre-grid, .opt-grid { grid-template-columns: 1fr; }
+    .offre-card.featured { transform: none; }
+    .feature-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .m-nav-links { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .offre-card.featured { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Nav ─── -->
+<header class="m-nav" id="top">
+  <a class="brand" href="#top" aria-label="Accueil">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 2C8 6 6 9 6 13a6 6 0 0012 0c0-4-2-7-6-11z" fill="currentColor"/></svg>
+    </div>
+    <div><div class="name">Nos offres</div><div class="sub">Pilotez votre activité</div></div>
+  </a>
+  <nav class="m-nav-links" aria-label="Sections">
+    <a href="#offres">Offres</a>
+    <a href="#socle">Socle inclus</a>
+    <a href="#options">Options</a>
+  </nav>
+  <div class="m-nav-cta">
+    <a class="btn primary" href="#offres">Voir les offres</a>
+  </div>
+</header>
+
+<!-- ─── Hero ─── -->
+<section class="hero">
+  <div class="inner">
+    <span class="eyebrow">Trois offres · une seule plateforme</span>
+    <h1>Pilotez votre activité,<br><span class="ocean-word">à votre échelle</span></h1>
+    <p class="lead">Du moniteur indépendant au réseau multi-sites, choisissez l'offre qui vous ressemble. On commence par la formule <b>Freelance</b> — les deux formules supérieures arrivent très vite.</p>
+  </div>
+</section>
+
+<!-- ─── Toggle engagement ─── -->
+<div class="toggle-wrap">
+  <div class="toggle" role="group" aria-label="Choix de l'engagement">
+    <button id="btn-annuel" class="active" onclick="setBilling('annuel')">Engagement annuel<span class="save-tag">−20 %</span></button>
+    <button id="btn-mensuel" onclick="setBilling('mensuel')">Sans engagement</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- ─── Offres ─── -->
+  <section id="offres" class="reveal">
+    <div class="offre-grid">
+
+      <!-- OFFRE 1 — FREELANCE -->
+      <article class="offre-card featured">
+        <span class="ribbon">Disponible</span>
+        <div class="name">Freelance</div>
+        <p class="who">Le moniteur ou loueur indépendant — une seule unité (1 bateau <b>ou</b> 1 camionnette).</p>
+
+        <div class="price" id="freelance-price">19,90 €<small>/mois</small></div>
+        <p class="price-alt" id="freelance-alt">soit 238,80 €/an, facturé annuellement</p>
+        <p class="billing-note" id="freelance-note">Engagement 12 mois · 24,90 €/mois sans engagement</p>
+
+        <div class="cap">⚓ 1 bateau ou 1 camionnette · capacité 8 max</div>
+
+        <ul>
+          <li><b>Offre socle complète</b> incluse</li>
+          <li>Planning des sorties &amp; réservations</li>
+          <li>Gestion du bateau ou du véhicule</li>
+          <li>Gestion de l'équipement &amp; du matériel</li>
+          <li>Gestion des gaz &amp; des blocs</li>
+          <li>Alerte météo &amp; gestion des palanquées</li>
+          <li>Options IA &amp; visibilité activables à la carte</li>
+        </ul>
+
+        <div class="cta"><a class="btn primary" href="#options">Personnaliser mon offre</a></div>
+      </article>
+
+      <!-- OFFRE 2 — À VENIR -->
+      <article class="offre-card soon">
+        <div class="soon-badge">Bientôt disponible</div>
+        <div class="name">Offre 2</div>
+        <p class="who">La formule intermédiaire, pour l'activité multi-unités. À définir ensemble.</p>
+        <div class="price">—</div>
+        <p class="price-alt">Détails à venir</p>
+        <p class="billing-note" style="color:var(--muted);">En cours de préparation</p>
+        <div class="cap" style="background:var(--line-soft);border-color:var(--line);color:var(--muted);">À formaliser à l'étape suivante</div>
+        <ul>
+          <li>Tout le socle Freelance</li>
+          <li>Capacité élargie (plusieurs unités)</li>
+          <li>Options avancées à préciser</li>
+        </ul>
+        <div class="cta"><a class="btn ghost" href="#" aria-disabled="true">Bientôt</a></div>
+      </article>
+
+      <!-- OFFRE 3 — À VENIR -->
+      <article class="offre-card soon">
+        <div class="soon-badge">Bientôt disponible</div>
+        <div class="name">Offre 3</div>
+        <p class="who">La formule supérieure, pour les structures les plus exigeantes. À définir ensemble.</p>
+        <div class="price">—</div>
+        <p class="price-alt">Détails à venir</p>
+        <p class="billing-note" style="color:var(--muted);">En cours de préparation</p>
+        <div class="cap" style="background:var(--line-soft);border-color:var(--line);color:var(--muted);">À formaliser à l'étape suivante</div>
+        <ul>
+          <li>Tout le socle &amp; options incluses</li>
+          <li>Capacité maximale</li>
+          <li>Accompagnement renforcé à préciser</li>
+        </ul>
+        <div class="cta"><a class="btn ghost" href="#" aria-disabled="true">Bientôt</a></div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ─── Socle inclus ─── -->
+  <section id="socle" class="socle reveal">
+    <div class="sec-label">Inclus dans toutes les offres</div>
+    <h2>L'offre socle</h2>
+    <p class="intro">Le cœur opérationnel de la plateforme — présent dès la formule Freelance, sans supplément.</p>
+
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="ico">📅</div>
+        <div class="ftitle">Planning</div>
+        <div class="fdesc">Sorties, réservations et disponibilités en un coup d'œil.</div>
+      </div>
+      <div class="feature">
+        <div class="ico">⚓</div>
+        <div class="ftitle">Bateau / véhicule</div>
+        <div class="fdesc">Gestion de votre bateau ou de votre camionnette.</div>
+      </div>
+      <div class="feature">
+        <div class="ico">🤿</div>
+        <div class="ftitle">Équipement</div>
+        <div class="fdesc">Suivi du matériel, de l'usure et de la maintenance.</div>
+      </div>
+      <div class="feature">
+        <div class="ico">🫧</div>
+        <div class="ftitle">Gestion des gaz</div>
+        <div class="fdesc">Mélanges, niveaux et traçabilité des gaz.</div>
+      </div>
+      <div class="feature">
+        <div class="ico">🛢️</div>
+        <div class="ftitle">Gestion des blocs</div>
+        <div class="fdesc">Parc de bouteilles, contrôles et rotation.</div>
+      </div>
+      <div class="feature">
+        <div class="ico">🌦️</div>
+        <div class="ftitle">Alerte météo</div>
+        <div class="fdesc">Conditions et alertes pour sécuriser vos sorties.</div>
+      </div>
+      <div class="feature">
+        <div class="ico">👥</div>
+        <div class="ftitle">Palanquées</div>
+        <div class="fdesc">Composition et suivi des palanquées par sortie.</div>
+      </div>
+      <div class="feature">
+        <div class="ico">✨</div>
+        <div class="ftitle">Et bien plus</div>
+        <div class="fdesc">De nombreuses autres fonctions au quotidien.</div>
+      </div>
+    </div>
+    <p class="socle-more">Le socle est inclus intégralement dans la formule Freelance — vous ne payez que les options dont vous avez besoin.</p>
+  </section>
+
+  <!-- ─── Options ─── -->
+  <section id="options" class="options reveal">
+    <div class="sec-label">À activer en plus du socle</div>
+    <h2>Les options facturées</h2>
+    <p class="intro">Des modules supplémentaires pour développer votre visibilité, automatiser la relation client et vendre en ligne.</p>
+
+    <div class="opt-grid">
+
+      <!-- Option 1 -->
+      <div class="opt-card">
+        <div class="ico">📣</div>
+        <div class="oname">Réseau social &amp; e-réputation</div>
+        <div class="odesc">Votre agent IA publie <b>3 posts par semaine</b> et répond automatiquement à vos <b>avis Google</b>.</div>
+        <div class="oprice">14,90 €<small>/mois</small></div>
+      </div>
+
+      <!-- Option 2 -->
+      <div class="opt-card">
+        <div class="ico">💬</div>
+        <div class="oname">Chatbot IA + widget réservation</div>
+        <div class="odesc">Un assistant IA qui répond à vos clients, couplé à un widget de réservation sur votre site.</div>
+        <div class="oprice">14,90 €<small>/mois</small></div>
+        <div class="oadd">Inclut le <b>widget de réservation</b> en ligne.</div>
+      </div>
+
+      <!-- Option 3 -->
+      <div class="opt-card">
+        <div class="ico">🛒</div>
+        <div class="oname">Boutique en ligne</div>
+        <div class="odesc">Vendez vos articles en ligne (nombre d'articles maximisé).</div>
+        <div class="oprice">24 €<small>/mois</small></div>
+        <div class="oadd">Widget de réservation en option : <b>+14,90 €/mois</b>.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── Footnote ─── -->
+  <p class="footnote">
+    <b>Freelance</b> — 1 bateau <b>ou</b> 1 camionnette, capacité 8 max. <b>19,90 €/mois</b> avec engagement annuel,
+    <b>24,90 €/mois</b> sans engagement. Offre socle incluse. Options facturées en supplément.
+    Tarifs indicatifs en cours de validation — les offres 2 et 3 seront formalisées à l'étape suivante.
+  </p>
+</main>
+
+<footer class="page-footer">
+  <p style="max-width:620px;margin:0 auto 6px;line-height:1.55">
+    <strong>Pilotez votre activité plongée</strong> — planning, bateau, équipement, gaz, blocs, météo et palanquées dans une seule plateforme.
+  </p>
+  <div>© <span id="year">2026</span> · Document de travail — offre Freelance</div>
+</footer>
+
+<script>
+(function(){
+  // Nav scroll state
+  var nav = document.querySelector('.m-nav');
+  if (nav) {
+    var onScroll = function(){ nav.classList.toggle('is-scrolled', window.scrollY > 16); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+  // Année
+  var y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+
+  // Reveal au scroll
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var targets = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    targets.forEach(function(el){ el.classList.add('is-visible'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    targets.forEach(function(el){ io.observe(el); });
+  }
+})();
+
+// Toggle engagement annuel / mensuel
+function setBilling(mode) {
+  var price = document.getElementById('freelance-price');
+  var alt   = document.getElementById('freelance-alt');
+  var note  = document.getElementById('freelance-note');
+  document.getElementById('btn-annuel').classList.toggle('active', mode === 'annuel');
+  document.getElementById('btn-mensuel').classList.toggle('active', mode === 'mensuel');
+  if (mode === 'annuel') {
+    price.innerHTML = '19,90 €<small>/mois</small>';
+    alt.textContent = 'soit 238,80 €/an, facturé annuellement';
+    note.textContent = 'Engagement 12 mois · 24,90 €/mois sans engagement';
+  } else {
+    price.innerHTML = '24,90 €<small>/mois</small>';
+    alt.textContent = 'sans engagement, résiliable à tout moment';
+    note.textContent = 'Passez à l\'annuel pour 19,90 €/mois (−20 %)';
+  }
+}
+</script>
+</body>
+</html>
