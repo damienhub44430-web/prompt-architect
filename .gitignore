@@ -1,0 +1,20 @@
+# Dependances et sorties de build
+node_modules/
+.next/
+out/
+dist/
+
+# Sorties d'outils locaux — jamais du contenu de projet.
+.netlify/
+.vercel/
+
+# Configuration Claude Code propre a la machine : elle porte des identifiants de
+# serveurs MCP locaux, qui ne correspondent a rien ailleurs. Elle etait SUIVIE
+# par erreur ; retiree du suivi le 6 aout 2026, le fichier reste sur le poste.
+.claude/settings.local.json
+.claude/worktrees/
+
+# Secrets
+.env
+.env.local
+*.env
